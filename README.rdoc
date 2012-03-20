@@ -1,3 +1,12 @@
-= OpenteamCommons
+= Getting started
 
-This project rocks and uses MIT-LICENSE.
+Add to Gemfile:
+
+  gem 'openteam-commons'
+
+Run the generator
+
+  rails generate openteam_commons:install
+
+Create settings.yml from example
+  cp config/settings.yml.example config/settings.yml
