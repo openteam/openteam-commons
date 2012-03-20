@@ -25,8 +25,8 @@ module OpenteamCommons
 
       Settings.define 'storage.url',      :env_var => 'STORAGE_URL'
 
-      Settings.define 'unicorn.workers',  :env_var => 'STORAGE_URL'
-      Settings.define 'unicorn.timeout',  :env_var => 'STORAGE_URL'
+      Settings.define 'unicorn.workers',  :env_var => 'UNICORN_WORKERS'
+      Settings.define 'unicorn.timeout',  :env_var => 'UNICORN_TIMEOUT'
     end
 
     config.before_initialize do
