@@ -14,6 +14,7 @@ module OpenteamCommons
       def create_configs
         copy_file 'config/unicorn.rb'
         copy_file 'config/settings.yml.example'
+        copy_file 'Procfile'
       end
     end
   end
