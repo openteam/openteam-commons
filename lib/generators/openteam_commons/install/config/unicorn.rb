@@ -1,28 +1,56 @@
-current_dir = File.expand_path('../..', __FILE__)
+def current_dir
+  File.expand_path('../..', __FILE__)
+end
 
-group, project = current_dir.split('/')[-2..-1]
+def group
+  current_dir.split('/')[-2]
+end
 
-config_file_path = "#{current_dir}/config/settings.yml"
+def project
+  current_dir.split('/')[-1]
+end
 
-settings = File.exist?(config_file_path) ? YAML.load_file(config_file_path) : {}
+def config_file_path
+  "#{current_dir}/config/settings.yml"
+end
 
-settings['unicorn'] ||= {}
+def settings
+  YAML.load_file(config_file_path)['unicorn'] rescue {}
+end
 
-worker_processes  (settings['unicorn']['workers'] || 2).to_i
-timeout           (settings['unicorn']['timeout'] || 300).to_i
+def heroku?
+  ENV['PORT']
+end
+
+def pid_file
+  heroku? ? "/tmp/#{group}-#{project}.pid" : "/var/run/#{group}/#{project}.pid"
+end
+
+worker_processes  (settings['workers'] || 2).to_i
+timeout           (settings['timeout'] || 300).to_i
 preload_app       true
+pid               pid_file
 
-if ENV['PORT'] # Heroku evironment
+if heroku?
   listen            ENV['PORT'].to_i, :tcp_nopush => false
 else
   listen            "/tmp/#{group}-#{project}.sock", :backlog => 64
-  pid               "/var/run/#{group}/#{project}.pid"
+
   stdout_path       "/var/log/#{group}/#{project}/stdout.log"
   stderr_path       "/var/log/#{group}/#{project}/stderr.log"
 end
 
 before_fork do |server, worker|
   defined?(ActiveRecord::Base) and ActiveRecord::Base.connection.disconnect!
+
+  old_pid = "#{pid_file}.oldbin"
+  if File.exists?(old_pid) && server.pid != old_pid
+    begin
+      Process.kill("QUIT", File.read(old_pid).to_i)
+    rescue Errno::ENOENT, Errno::ESRCH
+      # someone else did our job for us
+    end
+  end
 end
 
 after_fork do |server, worker|
