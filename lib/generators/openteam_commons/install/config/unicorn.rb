@@ -2,7 +2,9 @@ current_dir = File.expand_path('../..', __FILE__)
 
 group, project = current_dir.split('/')[-2..-1]
 
-settings = YAML.load_file "#{current_dir}/config/settings.yml"
+config_file_path = "#{current_dir}/config/settings.yml"
+
+settings = File.exist?(config_file_path) ? YAML.load_file(config_file_path) : {}
 
 settings['unicorn'] ||= {}
 
