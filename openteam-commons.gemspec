@@ -7,19 +7,16 @@ require 'openteam-commons/version'
 Gem::Specification.new do |s|
   s.name        = 'openteam-commons'
   s.version     = OpenteamCommons::VERSION
-  s.authors     = ['TODO: Your name']
-  s.email       = ['TODO: Your email']
-  s.homepage    = 'TODO'
-  s.summary     = 'TODO: Summary of OpenteamCommons.'
-  s.description = 'TODO: Description of OpenteamCommons.'
+  s.authors     = ['OpenTeam']
+  s.email       = ['mail@openteam.ru']
+  s.homepage    = 'https://github.com/openteam/openteam-commons'
+  s.summary     = 'Summary of OpenteamCommons.'
+  s.description = 'Description of OpenteamCommons.'
 
   s.files = Dir['{app,config,db,lib}/**/*'] + ['MIT-LICENSE', 'Rakefile', 'README.rdoc']
-  s.test_files = Dir['test/**/*']
 
   s.add_dependency 'airbrake'
   s.add_dependency 'configliere'
   s.add_dependency 'rails'
   s.add_dependency 'unicorn'
-
-  s.add_development_dependency 'sqlite3'
 end
