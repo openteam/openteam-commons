@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+CURRENT_PATH=$(dirname $(dirname $(realpath $0)))
+
+PROJECT_GROUP=$(basename $(dirname $CURRENT_PATH))
+PROJECT_NAME=$(basename $(dirname $(dirname $(realpath $0))))
+
+echo "group: ${PROJECT_GROUP} name: ${PROJECT_NAME}"
+
+if [ $(/usr/bin/uname) == "FreeBSD" ]; then
+  git checkout Gemfile.lock
+fi
+
+git pull
+
+bundle --path .bundle --binstubs --clean --without test:development
+
+bin/rake db:migrate
+
+if [ $(/usr/bin/uname) == "FreeBSD" ]; then
+  RC_PATH=/usr/local/rc.d/
+else
+  RC_PATH=/etc/init.d/
+fi
+
+RC_SCRIPT=${RC_PATH}/${PROJECT_GROUP}-${PROJECT_NAME}
+
+if [ -f ${RC_SCRIPT} ]; then
+  ${RC_SCRIPT} restart
+
+  bin/rake assets:precompile
+
+  ${RC_SCRIPT} restart
+else
+  bin/rake assets:precompile
+fi
+

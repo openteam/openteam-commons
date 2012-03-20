@@ -1,0 +1,18 @@
+ru:
+  date:
+    formats:
+      default: "%d.%m.%Y"
+      short: "%d %b"
+      long: "%d %B %Y"
+
+  time:
+    # Форматы времени
+    formats:
+      default: "%d.%m.%Y %H:%M"
+      short: "%d %b, %H:%M"
+      long: "%d %B %Y, %H:%M"
+
+    # am/pm решено перевести как "утра/вечера" :)
+    am: "утра"
+    pm: "вечера"
+
