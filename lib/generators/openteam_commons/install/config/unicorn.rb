@@ -15,7 +15,7 @@ def config_file_path
 end
 
 def settings
-  YAML.load_file(config_file_path)['unicorn'] rescue {}
+  YAML.load_file(config_file_path)['unicorn'] || {}
 end
 
 def heroku?
