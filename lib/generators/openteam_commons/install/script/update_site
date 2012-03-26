@@ -26,11 +26,11 @@ fi
 RC_SCRIPT=${RC_PATH}/${PROJECT_GROUP}-${PROJECT_NAME}
 
 if [ -f ${RC_SCRIPT} ]; then
-  ${RC_SCRIPT} restart
+  ${RC_SCRIPT} reload
 
   bin/rake assets:precompile
 
-  ${RC_SCRIPT} restart
+  ${RC_SCRIPT} reload
 else
   bin/rake assets:precompile
 fi
