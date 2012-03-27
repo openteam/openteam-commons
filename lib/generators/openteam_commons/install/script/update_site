@@ -35,4 +35,4 @@ else
   bin/rake assets:precompile
 fi
 
-bin/rake airbrake:deploy
+bin/rake airbrake:deploy TO=production
