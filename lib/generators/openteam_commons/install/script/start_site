@@ -8,5 +8,4 @@ export LANG=ru_RU.UTF-8
 
 bundle exec unicorn -c $(realpath $(dirname $0)/../config/unicorn.rb) -E production -D
 
-
 bin/rake airbrake:deploy TO=production

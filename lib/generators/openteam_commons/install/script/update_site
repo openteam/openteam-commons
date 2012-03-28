@@ -18,7 +18,7 @@ bundle --path .bundle --binstubs --clean --without test:development
 bin/rake db:migrate
 
 if [ $(/usr/bin/uname) == "FreeBSD" ]; then
-  RC_PATH=/usr/local/rc.d/
+  RC_PATH=/usr/local/etc/rc.d/
 else
   RC_PATH=/etc/init.d/
 fi
