@@ -15,7 +15,9 @@ git pull
 
 bundle --path .bundle --binstubs --clean --without test:development
 
-bin/rake db:migrate
+if [ -f "config/database.yml" ]; then
+  bin/rake db:migrate
+fi
 
 if [ $(/usr/bin/uname) == "FreeBSD" ]; then
   RC_PATH=/usr/local/etc/rc.d/
@@ -27,12 +29,10 @@ RC_SCRIPT=${RC_PATH}/${PROJECT_GROUP}-${PROJECT_NAME}
 
 if [ -f ${RC_SCRIPT} ]; then
   ${RC_SCRIPT} reload
+fi
 
-  bin/rake assets:precompile
-
-  ${RC_SCRIPT} reload
-else
-  bin/rake assets:precompile
+if [ "x${1}" == "xca" ]; then
+  bin/rake assets:clean assets:precompile
 fi
 
 bin/rake airbrake:deploy TO=production
