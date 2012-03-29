@@ -6,21 +6,17 @@ module OpenteamCommons
     isolate_namespace OpenteamCommons
 
     config.before_configuration do
-      define_settings
-    end
-
-    config.before_initialize do
-      setup_airbrake
+      read_settings
     end
 
     config.after_initialize do
+      setup_airbrake
       setup_locale
-      setup_log_level
       setup_secret
     end
 
     private
-      def define_settings
+      def read_settings
         Settings.read(Rails.root.join('config', 'settings.yml')) if Rails.root.join('config', 'settings.yml').exist?
 
         Settings.defaults Settings.extract!(Rails.env)[Rails.env] || {}
@@ -39,9 +35,6 @@ module OpenteamCommons
         Settings.define 'sso.url',          :env_var => 'SSO_URL'
 
         Settings.define 'storage.url',      :env_var => 'STORAGE_URL'
-
-        Settings.define 'unicorn.workers',  :env_var => 'UNICORN_WORKERS'
-        Settings.define 'unicorn.timeout',  :env_var => 'UNICORN_TIMEOUT'
       end
 
       def setup_airbrake
@@ -64,10 +57,6 @@ module OpenteamCommons
 
       def setup_locale
         I18n.locale = I18n.default_locale
-      end
-
-      def setup_log_level
-        Rails.logger.level = ActiveSupport::BufferedLogger::Severity::WARN if Rails.env.production?
       end
   end
 end
