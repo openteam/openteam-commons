@@ -64,7 +64,7 @@ if [ -f "${CURRENT_PATH}/config/database.yml" ]; then
 fi
 
 if [ "x${1}" == "x--assets" ]; then
-  exec_rake assets:clean assets:precompile
+  exec_rake assets:clean:all assets:precompile:primary assets:precompile:nondigest
 fi
 
 reload_rc_script
