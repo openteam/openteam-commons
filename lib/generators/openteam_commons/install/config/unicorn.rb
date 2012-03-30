@@ -14,20 +14,20 @@ def config_file_path
   "#{current_dir}/config/settings.yml"
 end
 
-def settings
-  YAML.load_file(config_file_path)['unicorn'] || {}
-end
-
 def heroku?
   ENV['PORT']
+end
+
+def settings
+  heroku? ? {} : (YAML.load_file(config_file_path)['unicorn'] || {})
 end
 
 def pid_file
   heroku? ? "/tmp/#{group}-#{project}.pid" : "/var/run/#{group}/#{project}.pid"
 end
 
-worker_processes  (settings['workers'] || 2).to_i
-timeout           (settings['timeout'] || 300).to_i
+worker_processes  (settings['workers'] || ENV['UNICORN_WORKERS'] || 2).to_i
+timeout           (settings['timeout'] || ENV['UNICORN_TIMEOUT'] || 300).to_i
 preload_app       true
 pid               pid_file
 
