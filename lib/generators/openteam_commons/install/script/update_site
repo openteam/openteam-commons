@@ -1,36 +1,72 @@
 #!/usr/bin/env bash
 
+load_rvm_rc() {
+  if [ -f ~/.rvm/scripts/rvm ]; then
+    source ~/.rvm/scripts/rvm
+  fi
+
+  RVMRC_DIR=${CURRENT_PATH}
+  for ((;;)); do
+    if [ -f ${RVMRC_DIR}/.rvmrc ]; then
+      . ${RVMRC_DIR}/.rvmrc
+      break
+    elif [ "${RVMRC_DIR}" == "/" ]; then
+      break
+    fi
+    RVMRC_DIR=$(dirname ${RVMRC_DIR})
+  done
+}
+
+exec_git() {
+  /usr/bin/env git --git-dir=${CURRENT_PATH}/.git --work-tree=${CURRENT_PATH} $@
+}
+
+exec_rake() {
+  RAILS_ENV=production ${CURRENT_PATH}/bin/rake -f ${CURRENT_PATH}/Rakefile $@
+}
+
+reload_rc_script() {
+  if [ $(/usr/bin/uname) == "FreeBSD" ]; then
+    RC_PATH=/usr/local/etc/rc.d/
+  else
+    RC_PATH=/etc/init.d/
+  fi
+
+  RC_SCRIPT=${RC_PATH}/${PROJECT_GROUP}-${PROJECT_NAME}
+
+  if [ -f ${RC_SCRIPT} ]; then
+    ${RC_SCRIPT} reload
+  fi
+}
+
+bundle_update() {
+  BUNDLE_GEMFILE=${CURRENT_PATH}/Gemfile bundle --path .bundle --binstubs --clean --without test:development
+}
+
 CURRENT_PATH=$(dirname $(dirname $(realpath $0)))
 
-PROJECT_GROUP=$(basename $(dirname $CURRENT_PATH))
-PROJECT_NAME=$(basename $(dirname $(dirname $(realpath $0))))
-
-pushd $CURRENT_PATH
+PROJECT_GROUP=$(basename $(dirname ${CURRENT_PATH}))
+PROJECT_NAME=$(basename ${CURRENT_PATH})
 
 if [ $(/usr/bin/uname) == "FreeBSD" ]; then
-  git checkout Gemfile.lock
-  RC_PATH=/usr/local/etc/rc.d/
-else
-  RC_PATH=/etc/init.d/
+  exec_git checkout Gemfile.lock
 fi
-RC_SCRIPT=${RC_PATH}/${PROJECT_GROUP}-${PROJECT_NAME}
 
-git pull
+exec_git fetch
+exec_git merge origin/master
 
-bundle --path .bundle --binstubs --clean --without test:development
+load_rvm_rc
 
-if [ -f "config/database.yml" ]; then
-  bin/rake db:migrate
+bundle_update
+
+if [ -f "${CURRENT_PATH}/config/database.yml" ]; then
+  exec_rake db:migrate
 fi
 
 if [ "x${1}" == "x--assets" ]; then
-  bin/rake assets:clean assets:precompile
+  exec_rake assets:clean assets:precompile
 fi
 
-if [ -f ${RC_SCRIPT} ]; then
-  ${RC_SCRIPT} reload
-fi
+reload_rc_script
 
-bin/rake airbrake:deploy TO=production
-
-popd
+exec_rake airbrake:deploy TO=production
