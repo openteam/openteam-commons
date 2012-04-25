@@ -22,6 +22,8 @@ module OpenteamCommons
         Settings.defaults Settings.extract!(Rails.env)[Rails.env] || {}
         Settings.extract!(:test, :development, :production)
 
+        Settings.define 'amqp.url',         :env_var => 'AMQP_URL'
+
         Settings.define 'app.secret',       :env_var => 'APP_SECRET'
         Settings.define 'app.url',          :env_var => 'APP_URL'
 
