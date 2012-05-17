@@ -28,14 +28,19 @@ exec_rake() {
 reload_rc_script() {
   if [ $(/usr/bin/uname) == "FreeBSD" ]; then
     RC_PATH=/usr/local/etc/rc.d/
+    RC_SCRIPT=${RC_PATH}/${PROJECT_GROUP}-${PROJECT_NAME}.sh
+    RC_SUBSCRIBER_SCRIPT=${RC_PATH}/${PROJECT_GROUP}-${PROJECT_NAME}-subscriber.sh
   else
     RC_PATH=/etc/init.d/
+    RC_SCRIPT=${RC_PATH}/${PROJECT_GROUP}-${PROJECT_NAME}
+    RC_SUBSCRIBER_SCRIPT=${RC_PATH}/${PROJECT_GROUP}-${PROJECT_NAME}-subscriber
   fi
-
-  RC_SCRIPT=${RC_PATH}/${PROJECT_GROUP}-${PROJECT_NAME}
 
   if [ -f ${RC_SCRIPT} ]; then
     ${RC_SCRIPT} reload
+  fi
+  if [ -f ${RC_SUBSCRIBER_SCRIPT} ]; then
+    ${RC_SUBSCRIBER_SCRIPT} restart
   fi
 }
 
