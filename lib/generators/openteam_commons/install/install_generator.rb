@@ -11,6 +11,10 @@ module OpenteamCommons
         chmod 'script/update_site', 0755
       end
 
+      def create_libs
+        copy_file 'lib/tasks/cron.rake'
+      end
+
       def create_configs
         copy_file 'config/schedule.rb'
         copy_file 'config/settings.yml.example'
