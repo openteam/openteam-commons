@@ -1,52 +1,35 @@
-def current_dir
-  File.expand_path('../..', __FILE__)
+require File.expand_path('../directories.rb', __FILE__)
+
+dir = Directories.new
+
+def dir.settings
+  heroku? ? {} : (YAML.load_file(config('settings.yml'))['unicorn'] || {})
+end
+def dir.old_pid
+  "#{pid_file}.oldbin"
 end
 
-def group
-  current_dir.split('/')[-2]
-end
 
-def project
-  current_dir.split('/')[-1]
-end
-
-def config_file_path
-  "#{current_dir}/config/settings.yml"
-end
-
-def heroku?
-  ENV['PORT']
-end
-
-def settings
-  heroku? ? {} : (YAML.load_file(config_file_path)['unicorn'] || {})
-end
-
-def pid_file
-  heroku? ? "/tmp/#{group}-#{project}.pid" : "/var/run/#{group}/#{project}.pid"
-end
-
-worker_processes  (settings['workers'] || ENV['UNICORN_WORKERS'] || 2).to_i
-timeout           (settings['timeout'] || ENV['UNICORN_TIMEOUT'] || 300).to_i
+worker_processes  (dir.settings['workers'] || ENV['UNICORN_WORKERS'] || 2).to_i
+timeout           (dir.settings['timeout'] || ENV['UNICORN_TIMEOUT'] || 300).to_i
 preload_app       true
-pid               pid_file
+pid               dir.pid_file
 
-if heroku?
-  listen            ENV['PORT'].to_i, :tcp_nopush => false
-else
-  listen            "/tmp/#{group}-#{project}.sock", :backlog => 64
+listen            ENV['PORT'].to_i, :tcp_nopush => false if ENV['PORT'].to_i > 0
 
-  stdout_path       "/var/log/#{group}/#{project}/stdout.log"
-  stderr_path       "/var/log/#{group}/#{project}/stderr.log"
+unless dir.heroku?
+  listen            "/tmp/#{dir.group}-#{dir.project}.sock", :backlog => 64
+
+  stdout_path       dir.log('stdout.log')
+  stderr_path       dir.log('stderr.log')
 end
 
 before_fork do |server, worker|
   defined?(ActiveRecord::Base) and ActiveRecord::Base.connection.disconnect!
 
-  old_pid = "#{pid_file}.oldbin"
-  if File.exists?(old_pid) && server.pid != old_pid
+  if File.exists?(dir.old_pid) && server.pid != dir.old_pid
     begin
-      Process.kill("QUIT", File.read(old_pid).to_i)
+      Process.kill("QUIT", File.read(dir.old_pid).to_i)
     rescue Errno::ENOENT, Errno::ESRCH
       # someone else did our job for us
     end
