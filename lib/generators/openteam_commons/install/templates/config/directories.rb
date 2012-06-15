@@ -15,21 +15,20 @@ class Directories
     "#{root}/config/#{file}"
   end
 
+  def log_dir
+    @log_dir ||= FileUtils.mkdir_p("/var/log/#{group}/#{project}").first rescue "#{root}/log"
+  end
+
   def log(file=nil)
-    @log_dir ||= begin
-                   FileUtils.mkdir_p("/var/log/#{group}/#{project}")
-                   "/var/log/#{group}/#{project}/#{file}"
-                 rescue Errno::EACCES
-                   "#{root}/log/#{file}"
-                 end
+    "#{log_dir}/#{file}"
   end
 
   def pid_file
     @pid_file ||= begin
                     FileUtils.mkdir_p("/var/run/#{group}")
-                    p "/var/run/#{group}/#{project}.pid"
+                    "/var/run/#{group}/#{project}.pid"
                   rescue Errno::EACCES
-                    p "/tmp/#{group}-#{project}.pid"
+                    "/tmp/#{group}-#{project}.pid"
                   end
   end
 
