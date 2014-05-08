@@ -15,50 +15,49 @@ module OpenteamCommons
       setup_secret
     end
 
-    private
-      def read_settings
-        Settings.read(Rails.root.join('config', 'settings.yml')) if Rails.root.join('config', 'settings.yml').exist?
+    def read_settings
+      Settings.read(Rails.root.join('config', 'settings.yml')) if Rails.root.join('config', 'settings.yml').exist?
 
-        Settings.defaults Settings.extract!(Rails.env)[Rails.env] || {}
-        Settings.extract!(:test, :development, :production)
+      Settings.defaults Settings.extract!(Rails.env)[Rails.env] || {}
+      Settings.extract!(:test, :development, :production)
 
-        Settings.define 'amqp.url',         :env_var => 'AMQP_URL'
+      Settings.define 'amqp.url',         :env_var => 'AMQP_URL'
 
-        Settings.define 'app.secret',       :env_var => 'APP_SECRET'
-        Settings.define 'app.url',          :env_var => 'APP_URL'
+      Settings.define 'app.secret',       :env_var => 'APP_SECRET'
+      Settings.define 'app.url',          :env_var => 'APP_URL'
 
-        Settings.define 'errors.key',       :env_var => 'ERRORS_KEY'
-        Settings.define 'errors.url',       :env_var => 'ERRORS_URL'
+      Settings.define 'errors.key',       :env_var => 'ERRORS_KEY'
+      Settings.define 'errors.url',       :env_var => 'ERRORS_URL'
 
-        Settings.define 'solr.url',         :env_var => 'SOLR_URL'
+      Settings.define 'solr.url',         :env_var => 'SOLR_URL'
 
-        Settings.define 'sso.key',          :env_var => 'SSO_KEY'
-        Settings.define 'sso.secret',       :env_var => 'SSO_SECRET'
-        Settings.define 'sso.url',          :env_var => 'SSO_URL'
+      Settings.define 'sso.key',          :env_var => 'SSO_KEY'
+      Settings.define 'sso.secret',       :env_var => 'SSO_SECRET'
+      Settings.define 'sso.url',          :env_var => 'SSO_URL'
 
-        Settings.define 'storage.url',      :env_var => 'STORAGE_URL'
-      end
+      Settings.define 'storage.url',      :env_var => 'STORAGE_URL'
+    end
 
-      def setup_airbrake
-        if Settings['errors.key'].present?
-          Airbrake.configure do |config|
-            config.api_key = Settings['errors.key']
+    def setup_airbrake
+      if Settings['errors.key'].present?
+        Airbrake.configure do |config|
+          config.api_key = Settings['errors.key']
 
-            URI.parse(Settings['errors.url']).tap do | url |
-              config.host   = url.host
-              config.port   = url.port
-              config.secure = url.scheme.inquiry.https?
-            end
+          URI.parse(Settings['errors.url']).tap do | url |
+            config.host   = url.host
+            config.port   = url.port
+            config.secure = url.scheme.inquiry.https?
           end
         end
       end
+    end
 
-      def setup_secret
-        Rails.application.config.secret_token = Settings['app.secret']
-      end
+    def setup_secret
+      Rails.application.config.secret_token = Settings['app.secret']
+    end
 
-      def setup_locale
-        I18n.locale = I18n.default_locale
-      end
+    def setup_locale
+      I18n.locale = I18n.default_locale
+    end
   end
 end
