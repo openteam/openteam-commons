@@ -1,4 +1,4 @@
-require "openteam-commons/engine"
+require 'openteam-commons/engine'
 
 module OpenteamCommons
 end
