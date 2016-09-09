@@ -8,5 +8,5 @@ Run the generator
 
   rails generate openteam_commons:install
 
-Create settings.yml from example
-  cp config/settings.yml.example config/settings.yml
+Create and modify settings.yml
+  config/settings.yml
