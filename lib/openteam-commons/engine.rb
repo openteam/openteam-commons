@@ -53,7 +53,7 @@ module OpenteamCommons
         else
           Airbrake.configure do |config|
             config.project_key = Settings['errors.key']
-            config.project_id = -1
+            config.project_id = 1
             config.host = Settings['errors.url']
             config.environment = Rails.env
             config.ignore_environments = %w[development test]
