@@ -58,6 +58,11 @@ module OpenteamCommons
             config.environment = Rails.env
             config.ignore_environments = %w[development test]
           end
+          Airbrake.add_filter do |notice|
+            if notice[:errors].any? { |error| error[:type] == 'ActiveRecord::RecordNotFound' }
+              notice.ignore!
+            end
+          end
         end
       end
     end
