@@ -59,8 +59,9 @@ module OpenteamCommons
             config.ignore_environments = %w[development test]
           end
           ignore_errors = [
-            'ActiveRecord::RecordNotFound',
+            'ActionController::RoutingError',
             'ActionView::Template::Error',
+            'ActiveRecord::RecordNotFound',
           ]
           Airbrake.add_filter do |notice|
             if notice[:errors].any? { |error| ignore_errors.include? error[:type] }
