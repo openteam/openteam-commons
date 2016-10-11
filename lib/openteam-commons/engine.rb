@@ -60,7 +60,6 @@ module OpenteamCommons
           end
           ignore_errors = [
             'ActionController::RoutingError',
-            'ActionView::Template::Error',
             'ActiveRecord::RecordNotFound',
           ]
           Airbrake.add_filter do |notice|
